@@ -84,13 +84,7 @@ EXPOSE 37288
 # Use the healthcheck command part of unpoller as the health checker.
 HEALTHCHECK \
     --start-period=15s --interval=30s --timeout=3s \
-    CMD curl \
-        --silent \
-        --fail \
-        --location \
-        --show-error \
-        --insecure \
-        https://localhost:37288/health
+    CMD homelab healthcheck-service https://localhost:37288/health
 
 ENV USER=${USER_NAME}
 USER ${USER_NAME}:${GROUP_NAME}
