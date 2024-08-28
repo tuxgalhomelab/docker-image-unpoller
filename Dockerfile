@@ -20,7 +20,10 @@ RUN \
     && homelab install git patch \
     && mkdir -p /root/unpoller-build \
     # Download unpoller repo. \
-    && git clone --quiet --depth 1 --branch ${UNPOLLER_VERSION:?} https://github.com/unpoller/unpoller /root/unpoller-build
+    && homelab download-git-repo \
+        https://github.com/unpoller/unpoller \
+        ${UNPOLLER_VERSION:?} \
+        /root/unpoller-build
 
 WORKDIR /root/unpoller-build
 
