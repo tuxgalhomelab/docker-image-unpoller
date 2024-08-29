@@ -12,7 +12,7 @@ ARG UNPOLLER_VERSION
 COPY scripts/start-unpoller.sh /scripts/
 COPY patches /patches
 
-# hadolint ignore=SC3040
+# hadolint ignore=DL4006,SC3009,SC3040
 RUN \
     set -E -e -o pipefail \
     && export HOMELAB_VERBOSE=y \
@@ -22,24 +22,19 @@ RUN \
     && homelab download-git-repo \
         https://github.com/unpoller/unpoller \
         ${UNPOLLER_VERSION:?} \
-        /root/unpoller-build
-
-WORKDIR /root/unpoller-build
-
-# hadolint ignore=DL4006,SC2035
-RUN \
-    set -E -e -o pipefail \
-    && export HOMELAB_VERBOSE=y \
+        /root/unpoller-build \
+    && pushd /root/unpoller-build \
     # Apply the patches. \
     && (find /patches -iname *.diff -print0 | sort -z | xargs -0 -r -n 1 patch -p2 -i) \
     # Build Unpoller. \
     && go mod tidy \
     && CGO_ENABLED=0 GOOS=linux go build -a . \
+    && popd \
     # Copy the build artifacts. \
-    && mkdir -p /output/bin /output/scripts /output/configs \
-    && cp /scripts/start-unpoller.sh /output/scripts/ \
-    && cp unpoller /output/bin/ \
-    && cp examples/up.conf.example /output/configs/unpoller.conf
+    && mkdir -p /output/{bin,scripts,configs} \
+    && cp /root/unpoller-build/unpoller /output/bin/ \
+    && cp /root/unpoller-build/examples/up.conf.example /output/configs/unpoller.conf \
+    && cp /scripts/start-unpoller.sh /output/scripts/
 
 FROM ${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}
 
