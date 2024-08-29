@@ -9,8 +9,6 @@ FROM ${GO_IMAGE_NAME}:${GO_IMAGE_TAG} AS builder
 
 ARG UNPOLLER_VERSION
 
-SHELL ["/bin/bash", "-c"]
-
 COPY scripts/start-unpoller.sh /scripts/
 COPY patches /patches
 
@@ -43,8 +41,6 @@ RUN \
     && cp examples/up.conf.example /output/configs/unpoller.conf
 
 FROM ${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}
-
-SHELL ["/bin/bash", "-c"]
 
 ARG USER_NAME
 ARG GROUP_NAME
