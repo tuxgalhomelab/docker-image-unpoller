@@ -12,6 +12,7 @@ ARG UNPOLLER_VERSION
 COPY scripts/start-unpoller.sh /scripts/
 COPY patches /patches
 
+# hadolint ignore=SC3040
 RUN \
     set -E -e -o pipefail \
     && export HOMELAB_VERBOSE=y \
@@ -48,7 +49,7 @@ ARG USER_ID
 ARG GROUP_ID
 ARG UNPOLLER_VERSION
 
-# hadolint ignore=DL4006,SC2086
+# hadolint ignore=DL4006,SC2086,SC3009
 RUN --mount=type=bind,target=/unpoller-build,from=builder,source=/output \
     set -E -e -o pipefail \
     && export HOMELAB_VERBOSE=y \
