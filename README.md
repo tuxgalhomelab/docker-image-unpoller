@@ -1,5 +1,5 @@
-# Home Lab Unpoller Docker Image
+# Homelab Unpoller Docker Image
 
-[![Build](https://github.com/TuxdudeHomeLab/docker-image-unpoller/actions/workflows/build.yml/badge.svg)](https://github.com/TuxdudeHomeLab/docker-image-unpoller/actions/workflows/build.yml) [![Lint](https://github.com/TuxdudeHomeLab/docker-image-unpoller/actions/workflows/lint.yml/badge.svg)](https://github.com/TuxdudeHomeLab/docker-image-unpoller/actions/workflows/lint.yml)
+[![Build](https://github.com/tuxgalhomelab/docker-image-unpoller/actions/workflows/build.yml/badge.svg)](https://github.com/tuxgalhomelab/docker-image-unpoller/actions/workflows/build.yml) [![Lint](https://github.com/tuxgalhomelab/docker-image-unpoller/actions/workflows/lint.yml/badge.svg)](https://github.com/tuxgalhomelab/docker-image-unpoller/actions/workflows/lint.yml)
 
-The docker image used for running [`Unpoller`](https://github.com/unpoller/unpoller) in Tuxdude's Home Lab setup.
+The docker image used for running [`Unpoller`](https://github.com/unpoller/unpoller) in tuxgal's Homelab setup.
