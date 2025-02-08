@@ -5,36 +5,67 @@ set -E -e -o pipefail
 
 BASE_IMAGE_CONFIG_KEY_PREFIX="BASE_IMAGE"
 
-RELEASE_PACKAGE_NAME="Unpoller"
-RELEASE_TAG_PACKAGE_NAME="unpoller"
-
-UPSTREAM_PACKAGE_NAME="Unpoller"
-UPSTREAM_VERSION_CONFIG_KEY="UNPOLLER_VERSION"
-UPSTREAM_GIT_REPO="https://github.com/unpoller/unpoller"
+UPSTREAM_PACKAGE_NAME="Unpoller/Go"
+UPSTREAM_UNPOLLER_VERSION_CONFIG_KEY="UNPOLLER_VERSION"
+UPSTREAM_UNPOLLER_GIT_REPO="https://github.com/unpoller/unpoller"
+UPSTREAM_GO_IMAGE_NAME_CONFIG_KEY="GO_IMAGE_NAME"
+UPSTREAM_GO_IMAGE_TAG_CONFIG_KEY="GO_IMAGE_TAG"
+UPSTREAM_GO_IMAGE_PATTERN="^[0-9]+\.[0-9]+\.[0-9]+-go-.+$"
 GIT_REPO_TAGS_CUSTOM_FILTERING_REGEX='^v.+\-rc.+$'
+
+RELEASE_PACKAGE_NAME="Unpoller"
+RELEASE_PACKAGE_VERSION_CONFIG_KEY="UNPOLLER_VERSION"
+RELEASE_TAG_PACKAGE_NAME="unpoller"
 
 TEST_TYPE="background"
 TEST_CONTAINER_TYPE="unpoller"
 TEST_CONTAINER_START_WAIT_SECONDS="10"
 
+current_unpoller_version() {
+    get_config_arg ${UPSTREAM_UNPOLLER_VERSION_CONFIG_KEY:?}
+}
+
+current_go_image_version() {
+    get_config_arg ${UPSTREAM_GO_IMAGE_TAG_CONFIG_KEY:?}
+}
+
 current_upstream_version() {
-    get_config_arg ${UPSTREAM_VERSION_CONFIG_KEY:?}
+    local unpoller_ver="$(current_unpoller_version)"
+    local go_image_ver="$(current_go_image_version)"
+    echo "${unpoller_ver:?}/${go_image_ver:?}"
+}
+
+latest_unpoller_version() {
+    git_remote_repo_latest_tag "${UPSTREAM_UNPOLLER_GIT_REPO:?}"
+}
+
+latest_go_image_version() {
+    dockerhub_latest_tag \
+        "$(get_config_arg ${UPSTREAM_GO_IMAGE_NAME_CONFIG_KEY:?})" \
+        "${UPSTREAM_GO_IMAGE_PATTERN:?}"
 }
 
 latest_upstream_version() {
-    git_remote_repo_latest_tag "${UPSTREAM_GIT_REPO:?}"
+    local unpoller_ver="$(latest_unpoller_version)"
+    local go_image_ver="$(latest_go_image_version)"
+    echo "${unpoller_ver:?}/${go_image_ver:?}"
 }
 
 update_latest_upstream_version() {
     local cur_ver="${1:?}"
     local latest_ver="${2:?}"
-    echo "Updating ${UPSTREAM_PACKAGE_NAME:?} ${UPSTREAM_VERSION_CONFIG_KEY:?} '${cur_ver:?}' -> '${latest_ver:?}'"
-    set_config_arg "${UPSTREAM_VERSION_CONFIG_KEY:?}" "${latest_ver:?}"
+    local cur_unpoller_ver="$(echo "${cur_ver:?}" | cut -d '/' -f 1)"
+    local cur_go_ver="$(echo "${cur_ver:?}" | cut -d '/' -f 2)"
+    local latest_unpoller_ver="$(echo "${latest_ver:?}" | cut -d '/' -f 1)"
+    local latest_go_ver="$(echo "${latest_ver:?}" | cut -d '/' -f 2)"
+    echo "Updating ${UPSTREAM_PACKAGE_NAME:?} ${UPSTREAM_UNPOLLER_VERSION_CONFIG_KEY:?}/${UPSTREAM_GO_IMAGE_TAG_CONFIG_KEY} '${cur_ver:?}' -> '${latest_ver:?}'"
+    set_config_arg "${UPSTREAM_UNPOLLER_VERSION_CONFIG_KEY:?}" "${latest_unpoller_ver:?}"
+    set_config_arg "${UPSTREAM_GO_IMAGE_TAG_CONFIG_KEY:?}" "${latest_go_ver:?}"
     git add ${ARGS_FILE:?}
 }
 
 package_current_release_version() {
-    current_upstream_version
+    get_config_arg "${RELEASE_PACKAGE_VERSION_CONFIG_KEY:?}"
 }
 
 test_start_container() {
