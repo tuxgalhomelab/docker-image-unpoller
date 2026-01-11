@@ -1,7 +1,7 @@
 BASE_IMAGE_NAME=tuxgal/homelab-base
 BASE_IMAGE_TAG=master
 GO_IMAGE_NAME=tuxgal/homelab-go
-GO_IMAGE_TAG=0.2.5-go-1.25.5
+GO_IMAGE_TAG=0.2.6-go-1.25.5
 USER_NAME=unpoller
 GROUP_NAME=unpoller
 USER_ID=16022
